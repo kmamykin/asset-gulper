@@ -2,6 +2,10 @@
   "name": "asset-gulper",
   "version": "1.0.0",
   "description": "Asset packager optimized for gulp, webpack, es6, React.js. Obviously Opinionated.",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/kmamykin/asset-gulper.git"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,5 +20,8 @@
     "react"
   ],
   "author": "Kliment Mamykin",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "gulp": "^3.8.11"
+  }
 }

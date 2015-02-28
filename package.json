@@ -24,6 +24,8 @@
   "dependencies": {
     "del": "^1.1.1",
     "gulp": "^3.8.11",
-    "gulp-util": "^3.0.4"
+    "gulp-util": "^3.0.4",
+    "webpack": "^1.6.0",
+    "webpack-dev-server": "^1.7.0"
   }
 }

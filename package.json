@@ -22,6 +22,7 @@
   "author": "Kliment Mamykin",
   "license": "ISC",
   "dependencies": {
+    "del": "^1.1.1",
     "gulp": "^3.8.11"
   }
 }

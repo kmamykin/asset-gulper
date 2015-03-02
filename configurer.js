@@ -42,17 +42,18 @@ module.exports = {
     compileConfig: function(config) {
         return {
             context: config.currentDir,
-            entry: [
-                path.join(config.app, config.main)
-            ],
+            entry: {
+                app: path.join(config.app, config.main),
+                vendor: ["jquery", "bootstrap", "react", 'react-router', 'react-bootstrap']
+            },
             output: {
                 path: path.join(config.currentDir, config.outputDir),
-                filename: 'app.bundle.js',
+                filename: '[name].bundle.js',
                 publicPath: '/' + config.outputDir + '/'
             },
             module: {
                 loaders: [
-                    { test: /\.jsx?$/, loaders: ['react-hot', 'jsx?harmony'], exclude: /node_modules/ }
+                    { test: /\.jsx?$/, loaders: ['jsx?harmony'], exclude: /node_modules/ }
                 ]
             },
             resolve: {
@@ -71,8 +72,14 @@ module.exports = {
                         "NODE_ENV": JSON.stringify("production")
                     }
                 }),
-                new webpack.optimize.DedupePlugin(),
-                new webpack.optimize.UglifyJsPlugin()
+                //new webpack.optimize.DedupePlugin(),
+                //new webpack.optimize.UglifyJsPlugin(),
+                new webpack.ProvidePlugin({
+                    $: "jquery",
+                    jQuery: "jquery",
+                    "windows.jQuery": "jquery"
+                }),
+                new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js")
             ]
         };
     },

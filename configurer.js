@@ -1,15 +1,19 @@
 var webpack = require('webpack');
 var path = require('path');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     watchConfig: function(config) {
         return {
             context: config.currentDir,
-            entry: [
-                'webpack-dev-server/client?http://' + config.devServer.host + ":" + config.devServer.port,
-                'webpack/hot/only-dev-server',
-                path.join(config.app, config.main)
-            ],
+            entry: {
+                app: [
+                    'webpack-dev-server/client?http://' + config.devServer.host + ":" + config.devServer.port,
+                    'webpack/hot/only-dev-server',
+                    path.join(config.app, config.main)
+                ],
+                vendor: config.vendor || []
+            },
             output: {
                 path: path.join(config.currentDir, config.outputDir),
                 filename: 'app.bundle.js',
@@ -30,6 +34,15 @@ module.exports = {
                 fallback: path.join(config.currentDir, "node_modules")
             },
             plugins: [
+                new webpack.ProvidePlugin({
+                    $: "jquery",
+                    jQuery: "jquery",
+                    "windows.jQuery": "jquery"
+                }),
+                new webpack.optimize.CommonsChunkPlugin("vendor", "[name].bundle.js"),
+                new HtmlWebpackPlugin({
+                    template: path.join(config.app, 'index.html')
+                }),
                 new webpack.HotModuleReplacementPlugin(),
                 new webpack.NoErrorsPlugin()
             ],
@@ -44,11 +57,11 @@ module.exports = {
             context: config.currentDir,
             entry: {
                 app: path.join(config.app, config.main),
-                vendor: ["jquery", "bootstrap", "react", 'react-router', 'react-bootstrap']
+                vendor: config.vendor || []
             },
             output: {
                 path: path.join(config.currentDir, config.outputDir),
-                filename: '[name].bundle.js',
+                filename: '[name].bundle.[hash].js',
                 publicPath: '/' + config.outputDir + '/'
             },
             module: {
@@ -79,7 +92,17 @@ module.exports = {
                     jQuery: "jquery",
                     "windows.jQuery": "jquery"
                 }),
-                new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js")
+                new webpack.optimize.CommonsChunkPlugin("vendor", "[name].bundle.[hash].js"),
+                new HtmlWebpackPlugin({
+                    template: path.join(config.app, 'index.html')
+                }),
+                function() {
+                    this.plugin("done", function(stats) {
+                        require("fs").writeFileSync(
+                            path.join(config.currentDir, config.outputDir, "stats.json"),
+                            JSON.stringify(omitKeys(stats.toJson(), ['modules', 'chunks']), null, 2));
+                    });
+                }
             ]
         };
     },
@@ -90,3 +113,14 @@ module.exports = {
         }
     }
 };
+
+function omitKeys(obj, keys) {
+    var dup = {};
+    for (key in obj) {
+        if (keys.indexOf(key) === -1) {
+            dup[key] = obj[key];
+        }
+    }
+    return dup;
+}
+// TODO: https://github.com/glebm/gulp-webpack-react-bootstrap-sass-template/blob/master/webpack.config.litcoffee

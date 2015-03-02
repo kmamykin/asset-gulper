@@ -2,13 +2,32 @@ var webpack = require('webpack');
 var path = require('path');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
+var cssLoaders = ['style', 'css', 'autoprefixer-loader?browsers=last 2 versions'];
+var scssLoaders = cssLoaders.concat(["sass?precision=10&outputStyle=expanded&sourceMap=true"]);
+//var scssLoaders = cssLoaders.concat(["sass?precision=10&outputStyle=expanded&sourceMap=true&includePaths[]=" + path.resolve(__dirname, './bower_components')]);
+var styleModLoaders = [
+    { test: /\.css$/ , loaders: cssLoaders },
+    { test: /\.scss$/, loaders: scssLoaders }
+];
+
+var staticModLoaders = [
+    { test: /\.gif$/ , loader: "url?limit=10000&mimetype=image/gif" },
+    { test: /\.jpg$/ , loader: "url?limit=10000&mimetype=image/jpg" },
+    { test: /\.png$/ , loader: "url?limit=10000&mimetype=image/png" },
+    { test: /\.woff$/, loader: "url?limit=10000&mimetype=application/font-woff" },
+    { test: /\.ttf$/ , loader: "file?mimetype=application/vnd.ms-fontobject" },
+    { test: /\.eot$/ , loader: "file?mimetype=application/x-font-ttf" },
+    { test: /\.svg$/ , loader: "file?mimetype=image/svg+xml" }
+];
+
 module.exports = {
     watchConfig: function(config) {
+        var server = this.serverConfig(config);
         return {
             context: config.currentDir,
             entry: {
                 app: [
-                    'webpack-dev-server/client?http://' + config.devServer.host + ":" + config.devServer.port,
+                    'webpack-dev-server/client?http://' + server.host + ':' + server.port,
                     'webpack/hot/only-dev-server',
                     path.join(config.app, config.main)
                 ],
@@ -17,12 +36,12 @@ module.exports = {
             output: {
                 path: path.join(config.currentDir, config.outputDir),
                 filename: 'app.bundle.js',
-                publicPath: '/' + config.outputDir + '/'
+                publicPath: config.publicPath
             },
             module: {
                 loaders: [
                     { test: /\.jsx?$/, loaders: ['react-hot', 'jsx?harmony'], exclude: /node_modules/ }
-                ]
+                ].concat(styleModLoaders).concat(staticModLoaders)
             },
             resolve: {
                 root: [config.currentDir, path.join(config.currentDir, "node_modules")],
@@ -46,6 +65,7 @@ module.exports = {
                 new webpack.HotModuleReplacementPlugin(),
                 new webpack.NoErrorsPlugin()
             ],
+            cache: true,
             watch: true,
             watchDelay: 200,
             debug: true,
@@ -62,12 +82,12 @@ module.exports = {
             output: {
                 path: path.join(config.currentDir, config.outputDir),
                 filename: '[name].bundle.[hash].js',
-                publicPath: '/' + config.outputDir + '/'
+                publicPath: config.publicPath
             },
             module: {
                 loaders: [
                     { test: /\.jsx?$/, loaders: ['jsx?harmony'], exclude: /node_modules/ }
-                ]
+                ].concat(styleModLoaders).concat(staticModLoaders)
             },
             resolve: {
                 root: [config.currentDir, path.join(config.currentDir, "node_modules")],
@@ -85,8 +105,6 @@ module.exports = {
                         "NODE_ENV": JSON.stringify("production")
                     }
                 }),
-                //new webpack.optimize.DedupePlugin(),
-                //new webpack.optimize.UglifyJsPlugin(),
                 new webpack.ProvidePlugin({
                     $: "jquery",
                     jQuery: "jquery",
@@ -96,6 +114,8 @@ module.exports = {
                 new HtmlWebpackPlugin({
                     template: path.join(config.app, 'index.html')
                 }),
+                //new webpack.optimize.DedupePlugin(),
+                //new webpack.optimize.UglifyJsPlugin(),
                 function() {
                     this.plugin("done", function(stats) {
                         require("fs").writeFileSync(
@@ -108,8 +128,8 @@ module.exports = {
     },
     serverConfig: function(config) {
         return {
-            host: config.devServer.host || 'localhost',
-            port: config.devServer.port || 8080
+            host: 'localhost',
+            port: config.port || 8080
         }
     }
 };

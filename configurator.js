@@ -126,10 +126,10 @@ module.exports = {
             ]
         };
     },
-    serverConfig: function(config) {
+    serverConfig: function(options) {
         return {
-            host: 'localhost',
-            port: config.port || 8080
+            host: options.host || 'localhost',
+            port: options.port || 8080
         }
     }
 };

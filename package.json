@@ -1,7 +1,7 @@
 {
   "name": "asset-gulper",
-  "version": "1.0.0",
-  "description": "Asset packager optimized for gulp, webpack, es6, React.js. Obviously Opinionated.",
+  "version": "0.2.0",
+  "description": "Asset packager for modern web apps. Making configuration simple. Just start writing with ES6, JSX, React.js.",
   "repository": {
     "type": "git",
     "url": "http://github.com/kmamykin/asset-gulper.git"
@@ -11,10 +11,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "gulp",
-    "es6",
     "assets",
-    "js",
+    "es6",
+    "jsx",
     "css",
     "images",
     "react"
@@ -26,12 +25,9 @@
     "css-loader": "^0.9.1",
     "del": "^1.1.1",
     "file-loader": "^0.8.1",
-    "gulp": "^3.8.11",
-    "gulp-util": "^3.0.4",
     "html-webpack-plugin": "^1.1.0",
     "image-loader": "0.0.1",
     "jsx-loader": "^0.12.2",
-    "react": "^0.12.2",
     "react-hot-loader": "^1.1.5",
     "sass-loader": "^0.4.0",
     "style-loader": "^0.8.3",
